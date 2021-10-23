@@ -2,6 +2,7 @@
 ## Содержание
 1. [Описание проекта](#description) 
 2. [Используемые технологии](#technologies)
+3. [Проектирование](#designing)
 ---
 <a name="description"></a>  
 
@@ -36,3 +37,10 @@
 * PyQt5 — для создания тела приложения
 * SQLite — для создания базы данных слов
 * :link:[win10toast](https://github.com/jithurjacob/Windows-10-Toast-Notifications) / :link:[NotificationHub](https://docs.microsoft.com/ru-ru/azure/notification-hubs/notification-hubs-python-push-notification-tutorial) / :link:[Plyer](https://docs.microsoft.com/ru-ru/azure/notification-hubs/notification-hubs-python-push-notification-tutorial) — для настройки уведомлений 
+
+---
+<a name="designing"></a>
+
+## Этапы разработки
+### - [x] 1. Составить базу данных слов (для начала: английский и русский)  
+  Так как я не нашел уже готовую базу данных слов, я буду парсить сайт https://slovaronline.com/. И из полученных данных будет создаваться
