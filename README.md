@@ -38,6 +38,7 @@
 * SQLite — для создания базы данных слов
 * :link:[win10toast](https://github.com/jithurjacob/Windows-10-Toast-Notifications) / :link:[NotificationHub](https://docs.microsoft.com/ru-ru/azure/notification-hubs/notification-hubs-python-push-notification-tutorial) / :link:[Plyer](https://docs.microsoft.com/ru-ru/azure/notification-hubs/notification-hubs-python-push-notification-tutorial) — для настройки уведомлений 
 * BeautifulSoup4 — для парсинга сайтов
+* pyinstaller — для конвертации в *.exe*
 
 ---
 
@@ -81,3 +82,14 @@
     * **Понял** будет равносильна закрытию окна уведомления. То есть она не будет ничего за собой влечь
     * **Выучил** будет вызывать функцию ```learnWord```: удалять из БД текущего курса данное слово и добавлять его в БД изученных слов
 ### 5. Скомпилировать в *.exe*
+  * ```pip install pyinstaller```
+  * Открываем консоль в той папке, где лежит нужный файл **.py** и пишем:  
+    > ```pyinstaller my_soft.py```. Вместо my_soft.py подставляем свое название.  
+  * Будут сгенерированы 2 папки, **build** и **dist**. build можно сразу удалять, в dist будет наш *.exe*.
+  * Можно так же все в 1 файл паковать, параметром **-F**:  
+    > ```pyinstaller -F my_soft.py```
+  * Чтобы не появлялось консольное окошко во время запуска, добавляем **-w** или **--noconsole**
+  * Добавляем иконку:  
+    > ```-i=my_icon.ico``` *(или --icon=my_icon.ico)*
+  * Название приложения
+    > ```-n="my App"``` *(или --name=Name)*
