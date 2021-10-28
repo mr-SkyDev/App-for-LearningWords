@@ -3,6 +3,7 @@ import sqlite3
 import requests
 from bs4 import BeautifulSoup
 from time import sleep
+from pprint import pprint
 
 
 URL = "https://en-rus-sleng-dict.slovaronline.com/"
@@ -29,6 +30,7 @@ def get_data(html):
     # data = list()
     for a in words_link:
         link = a[0].get("href")
+        print("обрабатываю " + link)
         link_soup = BeautifulSoup(get_html(URL + link), "lxml")
         value = link_soup.find("div", class_="blockquote").text.strip()
 
@@ -38,11 +40,13 @@ def get_data(html):
         # })
         data = {
             'word': a[0].text.strip(),
-            'value': value
+            'value': value.splitlines()[0]
         }
+        pprint(data)
+        print()
         write_csv(data, "en-rus-sleng.csv")
         sleep(0.2)
-        print(link)
+        
 
 
 def write_csv(data, filename):
