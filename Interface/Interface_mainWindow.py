@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QSpacerItem,
 )
-from PyQt5.QtGui import QCursor, QIcon
+from PyQt5.QtGui import QCursor, QFont, QIcon
 from style import *  # Стили для виджетов
 import sys
 
@@ -59,6 +59,12 @@ class Interface(QMainWindow):
         self.setupUi()
 
     def setupUi(self):
+        # Надпись «Курсы»
+        self.title = QLabel(self)
+        self.title.setText('Курсы')
+        self.title.setFont(QFont('Yu Gothic UI Semibold', 18))
+
+        # Курсы
         self.englishCourse = CourseButton(
             self, "Английский", "сленг", "Выучи перевод и определения фраз"
         )
@@ -83,10 +89,11 @@ class Interface(QMainWindow):
         self.coursesGLayout = QGridLayout()
         self.coursesGLayout.setGeometry(QRect(0, 0, 800, 150))
 
-        self.coursesGLayout.addWidget(self.englishCourse.courseButton, 0, 0)
-        self.coursesGLayout.addWidget(self.russianCourse.courseButton, 1, 0)
-        self.coursesGLayout.addWidget(self.spainCourse.courseButton, 0, 1)
-        self.coursesGLayout.addWidget(self.myCourse.courseButton, 1, 1)
+        self.coursesGLayout.addWidget(self.title, 0, 0)
+        self.coursesGLayout.addWidget(self.englishCourse.courseButton, 1, 0)
+        self.coursesGLayout.addWidget(self.russianCourse.courseButton, 1, 1)
+        self.coursesGLayout.addWidget(self.spainCourse.courseButton, 2, 0)
+        self.coursesGLayout.addWidget(self.myCourse.courseButton, 2, 1)
 
         # Глобальная компоновка
         self.globalLayout = QVBoxLayout()
