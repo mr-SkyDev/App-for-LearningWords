@@ -72,11 +72,12 @@ class Interface(QMainWindow):
         )
         
         # Кнопка настроек
-        self.settingButton = QPushButton(self)
-        self.settingButton.setIcon(QIcon('Icons/settingsButton.png'))
-        self.settingButton.setToolTip('Настройки')
-        self.settingButton.setIconSize(QSize(35, 35))
-        self.settingButton.setStyleSheet(get_invisible_settingsButton_StyleSheet())
+        self.settingsButton = QPushButton(self)
+        self.settingsButton.setIcon(QIcon('Icons/settingsButton.png'))
+        self.settingsButton.setToolTip('Настройки')
+        self.settingsButton.setIconSize(QSize(35, 35))
+        self.settingsButton.setStyleSheet(get_invisible_settingsButton_StyleSheet())
+        self.settingsButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.coursesGLayout = QGridLayout()
         self.coursesGLayout.setGeometry(QRect(0, 0, 800, 150))
@@ -91,7 +92,7 @@ class Interface(QMainWindow):
         self.globalLayout.addLayout(self.coursesGLayout)
         self.verticalSpacer = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.globalLayout.addItem(self.verticalSpacer)
-        self.globalLayout.addWidget(self.settingButton, alignment=Qt.AlignRight)  # Кнопка настроек в правом нижнем углу
+        self.globalLayout.addWidget(self.settingsButton, alignment=Qt.AlignRight)  # Кнопка настроек в правом нижнем углу
 
         self.centralWidget = QWidget()
         self.centralWidget.setLayout(self.globalLayout)
