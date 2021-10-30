@@ -52,3 +52,22 @@ def get_courseButton_descriptionLabel_StyleSheet():
             font-size: 14px;
         }
     """
+
+
+def get_invisible_settingsButton_StyleSheet():
+    """ Прозрачная кнопка настроек """
+
+    return """
+        QPushButton {
+            background-color: rgba(255, 255, 255, 0);
+        }
+
+        QPushButton:hover {
+            border-radius: 22px;
+            background-color: rgba(100, 100, 100, 40);
+        }
+
+        QPushButton:pressed {
+            background-color: rgba(0, 0, 0, 70);
+        }
+    """

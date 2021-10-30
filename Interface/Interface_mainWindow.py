@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QObject, QRect
+from PyQt5.QtCore import QObject, QRect, QSize, Qt
 from PyQt5.QtWidgets import (
     QApplication,
     QLabel,
@@ -8,10 +8,9 @@ from PyQt5.QtWidgets import (
     QWidget,
     QGridLayout,
     QVBoxLayout,
-    QSpacerItem
+    QSpacerItem,
 )
-from PyQt5.QtCore import Qt  # Для вида курсора
-from PyQt5.QtGui import QCursor  # Для настройки курсора
+from PyQt5.QtGui import QCursor, QIcon
 from style import *  # Стили для виджетов
 import sys
 
@@ -71,8 +70,14 @@ class Interface(QMainWindow):
         self.myCourse = CourseButton(
             self, "Мой курс"
         )
+        
+        # Кнопка настроек
+        self.settingButton = QPushButton(self)
+        self.settingButton.setIcon(QIcon('Icons/settingsButton.png'))
+        self.settingButton.setToolTip('Настройки')
+        self.settingButton.setIconSize(QSize(35, 35))
+        self.settingButton.setStyleSheet(get_invisible_settingsButton_StyleSheet())
 
-        # Список курсов
         self.coursesGLayout = QGridLayout()
         self.coursesGLayout.setGeometry(QRect(0, 0, 800, 150))
 
@@ -86,6 +91,7 @@ class Interface(QMainWindow):
         self.globalLayout.addLayout(self.coursesGLayout)
         self.verticalSpacer = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.globalLayout.addItem(self.verticalSpacer)
+        self.globalLayout.addWidget(self.settingButton, alignment=Qt.AlignRight)  # Кнопка настроек в правом нижнем углу
 
         self.centralWidget = QWidget()
         self.centralWidget.setLayout(self.globalLayout)
