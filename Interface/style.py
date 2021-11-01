@@ -71,3 +71,24 @@ def get_invisible_settingsButton_StyleSheet():
             background-color: rgba(0, 0, 0, 70);
         }
     """
+
+
+def get_saveButton_StyleSheet():
+    """ Кнопка «Сохранить» """
+
+    return """
+        QPushButton {
+            border: 2px solid #000000;
+            border-radius: 10px;
+            padding: 0px 5px;
+        }
+
+        QPushButton:hover {
+            background-color: #DCDCDC;
+        }
+
+        QPushButton:pressed {
+            background-color: #C0C0C0;
+            border: 2px solid #696969;
+        }
+    """
