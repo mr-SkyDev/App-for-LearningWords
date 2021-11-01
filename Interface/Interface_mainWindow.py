@@ -16,7 +16,7 @@ import sys
 
 
 class CourseButton(QWidget):
-    def __init__(self, parent='Курс', title='', complexity='', description=''):
+    def __init__(self, parent="Курс", title="", complexity="", description=""):
         super().__init__()
 
         # Кнопка курса
@@ -52,17 +52,18 @@ class CourseButton(QWidget):
 class Interface(QMainWindow):
     def __init__(self):
         super().__init__()
-        
+
         self.setWindowTitle("App for LearningWords")
         self.setGeometry(300, 300, 700, 700)
-        self.setWindowIcon(QIcon('Icons/appIcon_v3.png'))
+        self.setWindowIcon(QIcon("Icons/appIcon_v3.png"))
         self.setupUi()
 
     def setupUi(self):
+        # ------------------------------------Курсы-------------------------------------
         # Надпись «Курсы»
         self.title = QLabel(self)
-        self.title.setText('Курсы')
-        self.title.setFont(QFont('Yu Gothic UI Semibold', 18))
+        self.title.setText("Курсы")
+        self.title.setFont(QFont("Yu Gothic UI Semibold", 18))
 
         # Курсы
         self.englishCourse = CourseButton(
@@ -74,18 +75,17 @@ class Interface(QMainWindow):
         self.spainCourse = CourseButton(
             self, "Испанский", "базовый", "Выучи определения слов"
         )
-        self.myCourse = CourseButton(
-            self, "Мой курс"
-        )
-        
-        # Кнопка настроек
+        self.myCourse = CourseButton(self, "Мой курс")
+
+        # -------------------------------Кнопка настроек--------------------------------
         self.settingsButton = QPushButton(self)
-        self.settingsButton.setIcon(QIcon('Icons/settingsButton.png'))
-        self.settingsButton.setToolTip('Настройки')
+        self.settingsButton.setIcon(QIcon("Icons/settingsButton.png"))
+        self.settingsButton.setToolTip("Настройки")
         self.settingsButton.setIconSize(QSize(35, 35))
         self.settingsButton.setStyleSheet(get_invisible_settingsButton_StyleSheet())
         self.settingsButton.setCursor(QCursor(Qt.PointingHandCursor))
 
+        # --------------------------------Список курсов---------------------------------
         self.coursesGLayout = QGridLayout()
         self.coursesGLayout.setGeometry(QRect(0, 0, 800, 150))
 
@@ -95,12 +95,16 @@ class Interface(QMainWindow):
         self.coursesGLayout.addWidget(self.spainCourse.courseButton, 2, 0)
         self.coursesGLayout.addWidget(self.myCourse.courseButton, 2, 1)
 
-        # Глобальная компоновка
+        # ----------------------------Глобальная компоновка-----------------------------
         self.globalLayout = QVBoxLayout()
         self.globalLayout.addLayout(self.coursesGLayout)
-        self.verticalSpacer = QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer = QSpacerItem(
+            20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding
+        )
         self.globalLayout.addItem(self.verticalSpacer)
-        self.globalLayout.addWidget(self.settingsButton, alignment=Qt.AlignRight)  # Кнопка настроек в правом нижнем углу
+        self.globalLayout.addWidget(
+            self.settingsButton, alignment=Qt.AlignRight
+        )  # Кнопка настроек в правом нижнем углу
 
         self.centralWidget = QWidget()
         self.centralWidget.setLayout(self.globalLayout)
