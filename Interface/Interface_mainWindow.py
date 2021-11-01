@@ -16,7 +16,9 @@ import sys
 
 
 class CourseButton(QWidget):
-    def __init__(self, parent="Курс", title="", complexity="", description=""):
+    def __init__(
+        self, parent, title="Курс", complexity="Сложность", description="Описание"
+    ):
         super().__init__()
 
         # Кнопка курса
