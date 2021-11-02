@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
         self.spainCourse = CourseButton(
             self, "Испанский", "базовый", "Выучи определения слов"
         )
-        self.myCourse = CourseButton(self, "Мой курс")
+        self.myCourse = CourseButton(self, "Мой курс", "", "")
 
         # -------------------------------Кнопка настроек--------------------------------
         self.settingsButton = QPushButton(self)
