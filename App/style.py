@@ -92,3 +92,24 @@ def get_saveButton_StyleSheet():
             border: 2px solid #696969;
         }
     """
+
+
+def get_selected_courseButton_StyleSheet():
+    """ Выбранный курс """
+
+    return """
+        QPushButton {
+            border: 5px solid #FF4040;
+            background-color: #DCDCDC;
+            border-radius: 10px;
+        }
+
+        QPushButton:hover {
+            background-color: #D3D3D3;
+        }
+
+        QPushButton:pressed {
+            background-color: #C0C0C0;
+            border: 5px solid #D5713F;
+        }
+    """

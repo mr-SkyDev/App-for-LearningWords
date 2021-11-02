@@ -29,6 +29,8 @@ class CourseButton(QWidget):
         self.courseButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.courseButton.setFixedSize(400, 150)
         self.courseButton.setStyleSheet(get_courseButton_StyleSheet())
+        self.courseButton.is_selected = False
+        self.courseButton.is_courseButton = True
 
         # Название курса
         self.title = QLabel(
@@ -90,6 +92,7 @@ class MainWindow(QMainWindow):
         self.settingsButton.setIconSize(QSize(35, 35))
         self.settingsButton.setStyleSheet(get_invisible_settingsButton_StyleSheet())
         self.settingsButton.setCursor(QCursor(Qt.PointingHandCursor))
+        self.settingsButton.is_courseButton = False
 
         # --------------------------------Список курсов---------------------------------
         self.coursesGLayout = QGridLayout()
@@ -120,6 +123,10 @@ class MainWindow(QMainWindow):
         # ----------------------------Открытие окна настроек----------------------------
         self.settingsButton.clicked.connect(self.showSettingsWindow)
 
+        # -----------------------------Выбор/удаление курса-----------------------------
+        for item in self.findChildren(QPushButton):
+            item.clicked.connect(self.clickOnCourseButton)
+
     def showSettingsWindow(self):
         self.settings = SettingsWindow()
         self.settings.move(  # Размещение окна настроек по центру главного окна
@@ -127,6 +134,16 @@ class MainWindow(QMainWindow):
             self.y() + self.height() // 2 - self.settings.height() // 2,
         )
         self.settings.show()
+    
+    def clickOnCourseButton(self):
+        # ----------------------------Изменение цвета рамки-----------------------------
+        sender = self.sender()
+        if sender.is_courseButton and not sender.is_selected:
+            sender.setStyleSheet(get_selected_courseButton_StyleSheet())
+            sender.is_selected = True
+        elif sender.is_courseButton and sender.is_selected:
+            sender.setStyleSheet(get_courseButton_StyleSheet())
+            sender.is_selected = False
 
 
 if __name__ == "__main__":
