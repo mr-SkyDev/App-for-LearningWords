@@ -1,4 +1,5 @@
 import sys
+import sqlite3
 
 from PyQt5.QtCore import QObject, QRect, QSize, Qt
 from PyQt5.QtWidgets import (
@@ -20,7 +21,13 @@ from settingsWindow import SettingsWindow
 
 class CourseButton(QWidget):
     def __init__(
-        self, parent, title="Курс", complexity="Сложность", description="Описание"
+        self,
+        parent,
+        name,
+        is_using,
+        title="Курс",
+        complexity="Сложность",
+        description="Описание",
     ):
         super().__init__()
 
@@ -28,9 +35,14 @@ class CourseButton(QWidget):
         self.courseButton = QPushButton(parent)
         self.courseButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.courseButton.setFixedSize(400, 150)
-        self.courseButton.setStyleSheet(get_courseButton_StyleSheet())
-        self.courseButton.is_selected = False
+        self.courseButton.setStyleSheet(
+            get_courseButton_StyleSheet()
+            if is_using == 0
+            else get_selected_courseButton_StyleSheet()
+        )
+        self.courseButton.is_using = is_using
         self.courseButton.is_courseButton = True
+        self.courseButton.name = name
 
         # Название курса
         self.title = QLabel(
@@ -63,27 +75,51 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("App for LearningWords")
         self.setGeometry(300, 300, 700, 700)
         self.setWindowIcon(QIcon("Icons/appIcon_v3.png"))
+
+        self.con = sqlite3.connect("WordsDB/words.db")
         self.setupUi()
         self.setupBackEnd()
 
     def setupUi(self):
         # ------------------------------------Курсы-------------------------------------
-        # Надпись «Курсы»
         self.title = QLabel(self)
         self.title.setText("Курсы")
         self.title.setFont(QFont("Yu Gothic UI Semibold", 18))
 
-        # Курсы
+        is_using = lambda name: int(
+            1 in [
+                i[0] for i in self.con.cursor()
+                    .execute(f"SELECT is_using FROM {name}")
+                    .fetchall()
+            ]
+        )
         self.englishCourse = CourseButton(
-            self, "Английский", "сленг", "Выучи перевод и определения фраз"
+            self,
+            "englishSlangCourse",
+            is_using("englishSlangCourse"),
+            "Английский",
+            "сленг",
+            "Выучи перевод и определения фраз",
         )
         self.russianCourse = CourseButton(
-            self, "Русский", "медицинский", "Выучи определения слов"
+            self,
+            "russianMedicineCourse",
+            is_using("russianMedicineCourse"),
+            "Русский",
+            "медицинский",
+            "Выучи определения слов",
         )
         self.spainCourse = CourseButton(
-            self, "Испанский", "базовый", "Выучи определения слов"
+            self,
+            "spainBaseCourse",
+            is_using("spainBaseCourse"),
+            "Испанский",
+            "базовый",
+            "Выучи определения слов",
         )
-        self.myCourse = CourseButton(self, "Мой курс", "", "")
+        self.myCourse = CourseButton(
+            self, "myCourse", is_using("myCourse"), "Мой курс", "", ""
+        )
 
         # -------------------------------Кнопка настроек--------------------------------
         self.settingsButton = QPushButton(self)
@@ -134,16 +170,28 @@ class MainWindow(QMainWindow):
             self.y() + self.height() // 2 - self.settings.height() // 2,
         )
         self.settings.show()
-    
+
     def clickOnCourseButton(self):
-        # ----------------------------Изменение цвета рамки-----------------------------
         sender = self.sender()
-        if sender.is_courseButton and not sender.is_selected:
+        if not sender.is_courseButton:
+            return
+
+        # ----------------------------Изменение цвета рамки-----------------------------
+        if not sender.is_using:
             sender.setStyleSheet(get_selected_courseButton_StyleSheet())
-            sender.is_selected = True
-        elif sender.is_courseButton and sender.is_selected:
+            sender.is_using = True
+        else:
             sender.setStyleSheet(get_courseButton_StyleSheet())
-            sender.is_selected = False
+            sender.is_using = False
+
+        # --------------------------Модификация текущего курса--------------------------
+        query = f"""
+            UPDATE {sender.name}
+            SET is_using = {1 if sender.is_using == True else 0}
+        """
+
+        self.con.cursor().execute(query).fetchall()
+        self.con.commit()
 
 
 if __name__ == "__main__":
