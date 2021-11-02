@@ -1,3 +1,5 @@
+import sys
+
 from PyQt5.QtCore import QObject, QRect, QSize, Qt
 from PyQt5.QtWidgets import (
     QApplication,
@@ -11,8 +13,9 @@ from PyQt5.QtWidgets import (
     QSpacerItem,
 )
 from PyQt5.QtGui import QCursor, QFont, QIcon
+
 from style import *  # Стили для виджетов
-import sys
+from settingsWindow import SettingsWindow
 
 
 class CourseButton(QWidget):
@@ -59,6 +62,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(300, 300, 700, 700)
         self.setWindowIcon(QIcon("Icons/appIcon_v3.png"))
         self.setupUi()
+        self.setupBackEnd()
 
     def setupUi(self):
         # ------------------------------------Курсы-------------------------------------
@@ -111,6 +115,18 @@ class MainWindow(QMainWindow):
         self.centralWidget = QWidget()
         self.centralWidget.setLayout(self.globalLayout)
         self.setCentralWidget(self.centralWidget)
+
+    def setupBackEnd(self):
+        # ----------------------------Открытие окна настроек----------------------------
+        self.settingsButton.clicked.connect(self.showSettingsWindow)
+
+    def showSettingsWindow(self):
+        self.settings = SettingsWindow()
+        self.settings.move(  # Размещение окна настроек по центру главного окна
+            self.x() + self.width() // 2 - self.settings.width() // 2,
+            self.y() + self.height() // 2 - self.settings.height() // 2,
+        )
+        self.settings.show()
 
 
 if __name__ == "__main__":
