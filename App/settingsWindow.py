@@ -16,7 +16,7 @@ from style import get_saveButton_StyleSheet
 import sys
 
 
-class SettingWindow(QWidget):
+class SettingsWindow(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -24,6 +24,7 @@ class SettingWindow(QWidget):
         self.setWindowIcon(QIcon("Icons/settingsAppIcon.png"))
         self.setGeometry(1000, 300, 300, 500)
         self.setupUi()
+        self.setupBackEnd()
 
     def setupUi(self):
         # -------------------------Название раздела «Настройки»-------------------------
@@ -67,10 +68,18 @@ class SettingWindow(QWidget):
         self.globalLayout.addWidget(self.saveButton, alignment=Qt.AlignRight)
 
         self.setLayout(self.globalLayout)
+    
+    def setupBackEnd(self):
+        #------------------------------Сохранение настроек------------------------------
+        self.saveButton.clicked.connect(self.closeWindow)
+    
+    def closeWindow(self):
+        ...  # код сохраняющий настройки
+        self.close() 
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    my_app = SettingWindow()
+    my_app = SettingsWindow()
     my_app.show()
     sys.exit(app.exec_())
