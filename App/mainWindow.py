@@ -51,7 +51,7 @@ class CourseButton(QWidget):
         self.description.setStyleSheet(get_courseButton_descriptionLabel_StyleSheet())
 
 
-class Interface(QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
@@ -115,6 +115,6 @@ class Interface(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    my_app = Interface()
+    my_app = MainWindow()
     my_app.show()
     sys.exit(app.exec_())

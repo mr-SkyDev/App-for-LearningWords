@@ -16,7 +16,7 @@ from style import get_saveButton_StyleSheet
 import sys
 
 
-class Interface(QWidget):
+class SettingWindow(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -71,6 +71,6 @@ class Interface(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    my_app = Interface()
+    my_app = SettingWindow()
     my_app.show()
     sys.exit(app.exec_())
