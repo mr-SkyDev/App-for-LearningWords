@@ -79,8 +79,8 @@ def get_saveButton_StyleSheet():
     return """
         QPushButton {
             border: 2px solid #000000;
-            border-radius: 10px;
-            padding: 0px 5px;
+            border-radius: 6px;
+            padding: 2px 5px;
         }
 
         QPushButton:hover {
@@ -111,5 +111,25 @@ def get_selected_courseButton_StyleSheet():
         QPushButton:pressed {
             background-color: #C0C0C0;
             border: 5px solid #D5713F;
+        }
+    """
+
+def get_changeViewButton_StyleSheet():
+    """ Изменить отображение таблицы """
+
+    return """
+        QPushButton {
+            border: 2px solid #000000;
+            border-radius: 6px;
+            padding: 2px 5px;
+        }
+
+        QPushButton:hover {
+            background-color: #DCDCDC;
+        }
+
+        QPushButton:pressed {
+            background-color: #C0C0C0;
+            border: 2px solid #696969;
         }
     """
