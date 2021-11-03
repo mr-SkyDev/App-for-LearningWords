@@ -1,5 +1,6 @@
 import sys
 import sqlite3
+from PyQt5 import QtGui
 
 from PyQt5.QtCore import QObject, QRect, QSize, Qt
 from PyQt5.QtWidgets import (
@@ -17,9 +18,10 @@ from PyQt5.QtGui import QCursor, QFont, QIcon
 
 from style import *  # Стили для виджетов
 from settingsWindow import SettingsWindow
+from courseViewWindow import CourseViewWindow
 
 
-class CourseButton(QWidget):
+class CourseButton(QPushButton):
     def __init__(
         self,
         parent,
@@ -29,31 +31,33 @@ class CourseButton(QWidget):
         complexity="Сложность",
         description="Описание",
     ):
-        super().__init__()
+        super().__init__(parent)
+
+        self.is_using = is_using
+        self.is_courseButton = True
+        self.name = name
+        self.parent = parent
 
         # Кнопка курса
-        self.courseButton = QPushButton(parent)
-        self.courseButton.setCursor(QCursor(Qt.PointingHandCursor))
-        self.courseButton.setFixedSize(400, 150)
-        self.courseButton.setStyleSheet(
+        # self.courseButton = QPushButton(parent)
+        self.setCursor(QCursor(Qt.PointingHandCursor))
+        self.setFixedSize(400, 150)
+        self.setStyleSheet(
             get_courseButton_StyleSheet()
             if is_using == 0
             else get_selected_courseButton_StyleSheet()
         )
-        self.courseButton.is_using = is_using
-        self.courseButton.is_courseButton = True
-        self.courseButton.name = name
 
         # Название курса
         self.title = QLabel(
-            title, self.courseButton, objectName="CourseButton-TitleLabel"
+            title, self, objectName="CourseButton-TitleLabel"
         )
         self.title.move(10, 10)
         self.title.setStyleSheet(get_courseButton_titleLabel_StyleSheet())
 
         # Сложность курса
         self.complexity = QLabel(
-            complexity, self.courseButton, objectName="CourseButton-ComplexityLabel"
+            complexity, self, objectName="CourseButton-ComplexityLabel"
         )
         self.complexity.move(10, 27)
         self.complexity.setStyleSheet(get_courseButton_complexityLabel_StyleSheet())
@@ -61,12 +65,18 @@ class CourseButton(QWidget):
         # Описание курса
         self.description = QLabel(
             description,
-            self.courseButton,
+            self,
             objectName="CourseButton-DescriptionLabel",
         )
         self.description.move(10, 127)
         self.description.setStyleSheet(get_courseButton_descriptionLabel_StyleSheet())
-
+    
+    def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
+        if event.button() == Qt.RightButton:
+            self.courseView = CourseViewWindow(self.name)
+            self.courseView.show()
+        elif event.button() == Qt.LeftButton:
+            self.parent.clickOnCourseButton(self)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -135,10 +145,10 @@ class MainWindow(QMainWindow):
         self.coursesGLayout.setGeometry(QRect(0, 0, 800, 150))
 
         self.coursesGLayout.addWidget(self.title, 0, 0)
-        self.coursesGLayout.addWidget(self.englishCourse.courseButton, 1, 0)
-        self.coursesGLayout.addWidget(self.russianCourse.courseButton, 1, 1)
-        self.coursesGLayout.addWidget(self.spainCourse.courseButton, 2, 0)
-        self.coursesGLayout.addWidget(self.myCourse.courseButton, 2, 1)
+        self.coursesGLayout.addWidget(self.englishCourse, 1, 0)
+        self.coursesGLayout.addWidget(self.russianCourse, 1, 1)
+        self.coursesGLayout.addWidget(self.spainCourse, 2, 0)
+        self.coursesGLayout.addWidget(self.myCourse, 2, 1)
 
         # ----------------------------Глобальная компоновка-----------------------------
         self.globalLayout = QVBoxLayout()
@@ -160,8 +170,8 @@ class MainWindow(QMainWindow):
         self.settingsButton.clicked.connect(self.showSettingsWindow)
 
         # -----------------------------Выбор/удаление курса-----------------------------
-        for item in self.findChildren(QPushButton):
-            item.clicked.connect(self.clickOnCourseButton)
+        # реализовано в методе clickOnCourseButton, который вызывается в методе кнопки 
+        # курса mousePressEvent при нажатии на ЛКМ
 
     def showSettingsWindow(self):
         self.settings = SettingsWindow()
@@ -171,23 +181,19 @@ class MainWindow(QMainWindow):
         )
         self.settings.show()
 
-    def clickOnCourseButton(self):
-        sender = self.sender()
-        if not sender.is_courseButton:
-            return
-
+    def clickOnCourseButton(self, button):
         # ----------------------------Изменение цвета рамки-----------------------------
-        if not sender.is_using:
-            sender.setStyleSheet(get_selected_courseButton_StyleSheet())
-            sender.is_using = True
+        if not button.is_using:
+            button.setStyleSheet(get_selected_courseButton_StyleSheet())
+            button.is_using = True
         else:
-            sender.setStyleSheet(get_courseButton_StyleSheet())
-            sender.is_using = False
+            button.setStyleSheet(get_courseButton_StyleSheet())
+            button.is_using = False
 
         # --------------------------Модификация текущего курса--------------------------
         query = f"""
-            UPDATE {sender.name}
-            SET is_using = {1 if sender.is_using == True else 0}
+            UPDATE {button.name}
+            SET is_using = {1 if button.is_using == True else 0}
         """
 
         self.con.cursor().execute(query).fetchall()
