@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QCursor, QFont, QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import (
     QApplication,
     QHBoxLayout,
@@ -55,6 +55,7 @@ class SettingsWindow(QWidget):
         self.saveButton.setFont(QFont("Yu Gothic UI Semibold", 12))
         self.saveButton.setStyleSheet(get_saveButton_StyleSheet())
         self.saveButton.setCursor(QCursor(Qt.PointingHandCursor))
+        self.saveButton.hide()
 
         # ----------------------------Глобальная компоновка-----------------------------
         self.globalLayout = QVBoxLayout()
@@ -70,12 +71,17 @@ class SettingsWindow(QWidget):
         self.setLayout(self.globalLayout)
     
     def setupBackEnd(self):
+        # ------------------------Установка значения в спинбокс-------------------------
+        self.settings = QSettings('App/config.ini', QSettings.IniFormat)
+        self.delaySB.setValue(self.settings.value('notificationDelay', 1, type=int))
+
         #------------------------------Сохранение настроек------------------------------
-        self.saveButton.clicked.connect(self.closeWindow)
+        self.delaySB.valueChanged.connect(lambda: self.saveButton.show())
+        self.saveButton.clicked.connect(self.saveSettings)
     
-    def closeWindow(self):
-        ...  # код сохраняющий настройки
-        self.close() 
+    def saveSettings(self):
+        self.settings.setValue('notificationDelay', self.delaySB.value())
+        self.close()
 
 
 if __name__ == "__main__":
