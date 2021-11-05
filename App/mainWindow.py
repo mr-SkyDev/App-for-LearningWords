@@ -73,7 +73,7 @@ class CourseButton(QPushButton):
     
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
         if event.button() == Qt.RightButton:
-            self.courseView = CourseViewWindow(self.name)
+            self.courseView = CourseViewWindow(self, self.name)
             self.courseView.show()
         elif event.button() == Qt.LeftButton:
             self.parent.clickOnCourseButton(self)

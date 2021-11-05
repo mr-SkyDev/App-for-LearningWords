@@ -133,3 +133,24 @@ def get_changeViewButton_StyleSheet():
             border: 2px solid #696969;
         }
     """
+
+
+def get_addRowButton_StyleSheet():
+    """ Добавить строку в таблицу """
+
+    return """
+        QPushButton {
+            border: 2px solid #000000;
+            border-radius: 6px;
+            padding: 2px 5px;
+        }
+
+        QPushButton:hover {
+            background-color: #DCDCDC;
+        }
+
+        QPushButton:pressed {
+            background-color: #C0C0C0;
+            border: 2px solid #696969;
+        }
+    """
