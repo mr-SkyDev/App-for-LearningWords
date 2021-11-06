@@ -36,7 +36,7 @@
 ## Какие технологии будут использоваться
 * PyQt5 — для создания тела приложения
 * SQLite — для создания базы данных слов
-* :link:[win10toast](https://github.com/jithurjacob/Windows-10-Toast-Notifications) / :link:[NotificationHub](https://docs.microsoft.com/ru-ru/azure/notification-hubs/notification-hubs-python-push-notification-tutorial) / :link:[Plyer](https://docs.microsoft.com/ru-ru/azure/notification-hubs/notification-hubs-python-push-notification-tutorial) — для настройки уведомлений 
+* :link:[win10toast](https://github.com/jithurjacob/Windows-10-Toast-Notifications) / :link:[NotificationHub](https://docs.microsoft.com/ru-ru/azure/notification-hubs/notification-hubs-python-push-notification-tutorial) / :link:[Plyer](https://plyer.readthedocs.io/en/latest/) — для настройки уведомлений 
 * BeautifulSoup4 — для парсинга сайтов
 * pyinstaller — для конвертации в *.exe*
 
