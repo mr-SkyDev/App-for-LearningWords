@@ -154,3 +154,16 @@ def get_addRowButton_StyleSheet():
             border: 2px solid #696969;
         }
     """
+
+def get_nonclickeble_saveButton_StyleSheet():
+    """ Некликабельная кнопка сохранения """
+    
+    return """
+        QPushButton {
+            /*background-color: #828282;*/
+            padding: 2px 5px;
+            color: #464451;
+            border-radius: 6px;
+            border: 2px solid #606E8C;
+        }
+    """

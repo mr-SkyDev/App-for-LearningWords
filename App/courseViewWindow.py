@@ -3,9 +3,12 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor, QFont, QIcon
 from PyQt5.QtWidgets import (
     QApplication,
+    QHBoxLayout,
     QHeaderView,
     QLabel,
     QPushButton,
+    QSizePolicy,
+    QSpacerItem,
     QStatusBar,
     QTableWidget,
     QTableWidgetItem,
@@ -21,13 +24,15 @@ from style import (
     get_saveButton_StyleSheet,
     get_addRowButton_StyleSheet,
     get_courseButton_StyleSheet,
-    get_selected_courseButton_StyleSheet
+    get_selected_courseButton_StyleSheet,
+    get_nonclickeble_saveButton_StyleSheet
 )
 
 
 class CourseViewWindow(QWidget):
     def __init__(self, courseSender, courseName="englishSlangCourse"):
         super().__init__()
+        self.isCourseChecked = courseSender.is_using
         self.courseSender = courseSender
         self.courseName = courseName
         self.translatedTitles = {
@@ -40,19 +45,22 @@ class CourseViewWindow(QWidget):
         self.setupBackEnd()
 
     def setupUi(self):
+        # -------------------------------------Окно-------------------------------------
         self.setWindowTitle(self.courseName)
         self.setWindowIcon(QIcon("Icons/appIcon_v3.png"))
-        self.setGeometry(100, 100, 700, 500)
+        self.move(100, 100)
+        self.setMinimumWidth(820)
+        self.setMinimumHeight(500)
 
         self.courseWordsTW = QTableWidget(self)  # Таблица для отображения БД
 
         # ------------------------------------Кнопки------------------------------------
         self.saveButton = QPushButton("Сохранить изменения", self)
         self.saveButton.clicked.connect(self.saveChanges)
-        self.saveButton.setStyleSheet(get_saveButton_StyleSheet())
+        self.saveButton.setStyleSheet(get_nonclickeble_saveButton_StyleSheet())
         self.saveButton.setFont(QFont("Yu Gothic UI Semibold", 10))
-        self.saveButton.setCursor(QCursor(Qt.PointingHandCursor))
-        self.saveButton.hide()
+        self.saveButton.setCursor(QCursor(Qt.ForbiddenCursor))
+        self.saveButton.isClickable = False
 
         self.changeViewButton = QPushButton("Изменить отображение", self)
         self.changeViewButton.clicked.connect(self.changeView)
@@ -72,16 +80,24 @@ class CourseViewWindow(QWidget):
         # ----------------------------------Статус бар----------------------------------
         self.statusbar = QLabel(self)
         self.statusbar.setFont(QFont("Yu Gothic UI Semibold", 8))
-        self.statusbar.hide()
+        self.statusbar.setText('')
 
         # ----------------------------------Компоновка----------------------------------
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.courseWordsTW)
-        self.layout.addWidget(self.saveButton)
-        self.layout.addWidget(self.changeViewButton)
-        self.layout.addWidget(self.addRowButton)
-        self.layout.addWidget(self.statusbar, alignment=Qt.AlignLeft)
-        self.setLayout(self.layout)
+        self.horizontalSpacer = QSpacerItem(
+            40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum
+        )
+        
+        self.buttonsLayout = QHBoxLayout()
+        self.buttonsLayout.addWidget(self.statusbar)
+        self.buttonsLayout.addItem(self.horizontalSpacer)
+        self.buttonsLayout.addWidget(self.saveButton)
+        self.buttonsLayout.addWidget(self.changeViewButton)
+        self.buttonsLayout.addWidget(self.addRowButton)
+        
+        self.globalLayout = QVBoxLayout()
+        self.globalLayout.addWidget(self.courseWordsTW)
+        self.globalLayout.addLayout(self.buttonsLayout)
+        self.setLayout(self.globalLayout)
 
     def setupBackEnd(self):
         self.changed = dict()  # Здесь будут временно храниться изменения
@@ -108,23 +124,46 @@ class CourseViewWindow(QWidget):
         self.courseWordsTW.itemChanged.connect(self.item_changed)
 
     def item_changed(self, item):
-        changedColumn = self.translatedTitles[self.titles[item.column()]]
+        """ Если ячейка поменяла значение, то будет вызван этот метод """
+
+        # Если значения поменялись, то добавляем к названию окна *
+        wt = self.windowTitle()  
+        if '*' not in wt:
+            self.setWindowTitle(wt + '*')
+
+        changedColumn = self.translatedTitles[self.titles[item.column()]]  # Переводим 
+        #                             колонки в те названия, которые используются в БД
+
         changedItem = item.text()
         if changedItem:
+            # Перевод + и - в «булевые» значения
             if changedItem == "+":
                 changedItem = 1
             elif changedItem == "-":
                 changedItem = 0
+            
+            # Добавляем в словарь измененные значения
             self.changed[item.row(), changedColumn] = changedItem
         else:
+            # Добавляем в словарь новые значения
             self.added[item.row()] = [
                 ('word', 'value', 'is_using'), ('', '', '')
             ]
 
-        self.saveButton.show()
+        # Делаем кнопку кликабельной
+        self.saveButton.isClickable = True  
+        self.saveButton.setStyleSheet(get_saveButton_StyleSheet())
+        self.saveButton.setCursor(QCursor(Qt.PointingHandCursor))
 
     def saveChanges(self):
+        """ Сохранение данных """
+
+        if not self.saveButton.isClickable:  # Если изменений не было, 
+            #                                  то кнопка работать не будет
+            return
+        
         cur = self.con.cursor()
+        # Создаем новые строки из словаря новых строк
         for row in self.added.keys():
             query = f"""
                 INSERT INTO {self.courseName} {self.added[row][0]}
@@ -133,12 +172,12 @@ class CourseViewWindow(QWidget):
             cur.execute(query)
             self.con.commit()
 
-        check = self.__checkCells()
+        check = self.__checkCells()  # Проверка ячеек перед сохранением данных
         if check:
             self.statusbar.setText(check)
-            self.statusbar.show()
             return
 
+        # Сохранем данные
         for row, col in self.changed.keys():
             query = f"""
                 UPDATE {self.courseName}
@@ -146,13 +185,25 @@ class CourseViewWindow(QWidget):
                 WHERE id = {row + 1}
             """
             cur.execute(query)
-        self.con.commit()
+
+        self.con.commit()  # Коммит
+
+        # Опустошаем контейнеры
         self.changed = dict()
         self.added = dict()
-        self.saveButton.hide()
-        self.statusbar.hide()
+
+        # Меняем название окна
+        self.setWindowTitle(self.windowTitle()[:-1])
+
+        # Делаем кнопку некликабельной
+        self.saveButton.setStyleSheet(get_nonclickeble_saveButton_StyleSheet())
+        self.saveButton.setCursor(QCursor(Qt.ForbiddenCursor))
+        self.saveButton.isClickable = False
+        self.statusbar.setText('')
 
     def changeView(self):
+        """ Изменение отображения таблицы, довольно бесполезный метод но пусть будет """
+
         if not self.changeViewButton.isChanged:
             self.courseWordsTW.resizeColumnsToContents()
             self.changeViewButton.isChanged = True
@@ -166,6 +217,8 @@ class CourseViewWindow(QWidget):
         )
 
     def addRow(self):
+        """ Добавление строки в таблицу. Работает только в myCourse """
+
         r = self.courseWordsTW.rowCount()
         self.courseWordsTW.setRowCount(r + 1)
         [
@@ -174,6 +227,8 @@ class CourseViewWindow(QWidget):
         ]
     
     def __checkCells(self):
+        """ Проверка на верные значения ячеек таблицы """
+
         self.isCourseChecked = False
         for ir in range(self.courseWordsTW.rowCount()):
             for ic in range(self.courseWordsTW.columnCount()):
@@ -186,7 +241,6 @@ class CourseViewWindow(QWidget):
                     self.isCourseChecked = True
         
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
-        self.__checkCells()
         if self.isCourseChecked:
             self.courseSender.setStyleSheet(get_selected_courseButton_StyleSheet())
         else:
