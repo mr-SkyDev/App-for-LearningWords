@@ -3,13 +3,15 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor, QFont, QIcon
 from PyQt5.QtWidgets import (
     QApplication,
+    QDialog,
+    QDialogButtonBox,
     QHBoxLayout,
     QHeaderView,
     QLabel,
+    QMessageBox,
     QPushButton,
     QSizePolicy,
     QSpacerItem,
-    QStatusBar,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -241,6 +243,20 @@ class CourseViewWindow(QWidget):
                     self.isCourseChecked = True
         
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        """ Синхронизация с главным окном и проверка на сохранение данных """
+
+        if self.saveButton.isClickable:
+            close = QMessageBox.question(
+                self,
+                "Подтвердите действия",
+                "Есть несохраненные данные",
+                QMessageBox.Save | QMessageBox.Close
+            )
+            if close == QMessageBox.Close:
+                event.accept()
+            else:
+                event.ignore()
+
         if self.isCourseChecked:
             self.courseSender.setStyleSheet(get_selected_courseButton_StyleSheet())
         else:
