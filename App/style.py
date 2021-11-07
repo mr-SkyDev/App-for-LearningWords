@@ -167,3 +167,36 @@ def get_nonclickeble_saveButton_StyleSheet():
             border: 2px solid #606E8C;
         }
     """
+
+
+def get_darkblue_notificationWindow_StyleSheet():
+    """ Темно синяя тема для окна уведомлений """
+
+    return """
+        QWidget {
+            background-color: #000080;
+        }
+    """
+
+
+def get_notificationButton_StyleSheet():
+    """ Кнопка «понял» для окна уведомлений """
+
+    return """
+        QPushButton {
+            border: none;
+            background-color: 0000ff;
+            border-radius: 5px;
+            border: 2px solid #000000;
+            padding: 3px 30px 3px 30px
+        }
+
+        QPushButton:hover {
+            background-color: #0000C8;
+        }
+
+        QPushButton:pressed {
+            background-color: #01018C;
+            border: 2px solid #000000;
+        }
+    """
