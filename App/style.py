@@ -174,7 +174,7 @@ def get_darkblue_notificationWindow_StyleSheet():
 
     return """
         QWidget {
-            background-color: #000080;
+            background-color: #0000ff;
         }
     """
 
@@ -192,11 +192,11 @@ def get_notificationButton_StyleSheet():
         }
 
         QPushButton:hover {
-            background-color: #0000C8;
+            background-color: #42AAFF;
         }
 
         QPushButton:pressed {
-            background-color: #01018C;
+            background-color: #0000C8;
             border: 2px solid #000000;
         }
     """
