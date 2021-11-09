@@ -6,8 +6,7 @@ from time import sleep
 from pprint import pprint
 
 
-URL = "https://rus-medical-terms.slovaronline.com/"
-# https://es-ru-big-dict.slovaronline.com/
+URL = "https://es-ru-big-dict.slovaronline.com/"
 
 def get_html(url):
     try:
@@ -44,7 +43,7 @@ def get_data(html):
         }
         pprint(data)
         print()
-        write_csv(data, "russianMedicineCourse.csv")
+        write_csv(data, "WordsDB/spainBaseCourse.csv")
         sleep(0.2)
         
 
@@ -63,12 +62,7 @@ def write_csv(data, filename):
         writer.writerow(data)
 
 
-def write_db(data):
-    ...
-
-
 def main():
-    # Парсер английского сленга
     data = get_data(get_html(URL))
     # write_csv(data, "en-rus-sleng.csv")
 
