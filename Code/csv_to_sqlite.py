@@ -3,7 +3,7 @@ import sqlite3
 
 
 def main():
-    filename = "englishSlangCourse"
+    filename = "russianMedicineCourse"
     with open('WordsDB/' + filename + '.csv', encoding="utf-8") as csvfile:
         reader = csv.DictReader(
             csvfile, fieldnames=["word", "value"], quotechar='"', delimiter=";"
