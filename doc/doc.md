@@ -33,8 +33,8 @@
 ---
 ## Интерфейс
 ### Главное окно 
-![главное окно](/doc/mainWindow.gif)
+![главное окно](/doc/gif/mainWindow.gif)
 
 ### Окно просмотра курса  
 **Открывается при нажатии на ПКМ**  
-![Окно просмотра курса](/doc/courseViewWindow.gif)
+![Окно просмотра курса](/doc/gif/courseViewWindow.gif)
