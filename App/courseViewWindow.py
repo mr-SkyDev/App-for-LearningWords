@@ -122,7 +122,6 @@ class CourseViewWindow(QWidget):
                     item = "+" if item else "-"
                 self.courseWordsTW.setItem(ir, ic, QTableWidgetItem(str(item)))
 
-        self.changeView()
         self.courseWordsTW.itemChanged.connect(self.item_changed)
 
     def item_changed(self, item):
@@ -243,12 +242,12 @@ class CourseViewWindow(QWidget):
                 event.accept()
             else:
                 event.ignore()
-
-        if self.isCourseChecked:
-            self.courseSender.setStyleSheet(get_selected_courseButton_StyleSheet())
         else:
-            self.courseSender.setStyleSheet(get_courseButton_StyleSheet())
-        self.__delExcessRows()
+            if self.isCourseChecked:
+                self.courseSender.setStyleSheet(get_selected_courseButton_StyleSheet())
+            else:
+                self.courseSender.setStyleSheet(get_courseButton_StyleSheet())
+            self.__delExcessRows()
 
     def __checkCells(self):
         """ Проверка на верные значения ячеек таблицы """
@@ -266,9 +265,6 @@ class CourseViewWindow(QWidget):
     
     def __delExcessRows(self):
         """ Удалить полностью пустые ряды """
-
-        if self.courseName != 'myCourse':
-            return
         
         cur = self.con.cursor()
         query = f"""
