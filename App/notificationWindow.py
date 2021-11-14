@@ -118,8 +118,8 @@ class NotificationWindow(QWidget):
         self.setLayout(self.globalLayout)
 
     def setupBackEnd(self):
-        self.okButton.clicked.connect(self.close)
-        # self.okButton.clicked.connect(self.closeWindowPosAnimation)
+        self.okButton.clicked.connect(self.closeWindowPosAnimation)
+        self.learnButton.clicked.connect(self.closeWindowPosAnimation)
 
         # ----------------------------Анимация появления окна---------------------------
         self.selfAnimationPos = QPropertyAnimation(self, b"pos")
