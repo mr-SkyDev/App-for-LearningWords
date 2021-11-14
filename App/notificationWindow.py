@@ -38,8 +38,8 @@ class NotificationWindow(QWidget):
 
         self.lines = len(word + value) // 54 + 1
         if self.lines > 10:
-            self.lines = 10
-            self.value = self.value[: 54 * 6 - 3] + "..."
+            self.lines = 8
+            self.value = self.value[:54 * 6 - 3] + "..."
             self.showFullButton = True
 
         self.setupUi()
@@ -48,6 +48,7 @@ class NotificationWindow(QWidget):
     def setupUi(self):
         self.setWindowTitle(self.title)
         self.setFixedSize(400, 150 + 18 * self.lines)
+        self.move(QPoint(DISPAYWIDTH + 5, DISPLAYHEIGHT - self.height() - 80))
         self.setWindowIcon(QIcon("Icons/AppIcon_v3.png"))
         self.setStyleSheet(get_darkblue_notificationWindow_StyleSheet())
 
@@ -137,7 +138,8 @@ class NotificationWindow(QWidget):
         self.selfAnimationPos.stop()
 
         self.selfAnimationPos.setStartValue(
-            QPoint(DISPAYWIDTH, DISPLAYHEIGHT - self.height() - 80)
+            # QPoint(DISPAYWIDTH + 5, DISPLAYHEIGHT - self.height() - 80)
+            QPoint(self.x(), self.y())
         )
         self.selfAnimationPos.setEasingCurve(QEasingCurve.InOutCubic)
 
@@ -152,11 +154,13 @@ class NotificationWindow(QWidget):
         self.selfAnimationPos.finished.connect(self.close)
 
         self.selfAnimationPos.setStartValue(
-            QPoint(DISPAYWIDTH - self.width() - 5, DISPLAYHEIGHT - self.height() - 80)
+            # QPoint(DISPAYWIDTH - self.width() - 5, DISPLAYHEIGHT - self.height() - 80)
+            QPoint(self.x(), self.y())
         )
         self.selfAnimationPos.setEasingCurve(QEasingCurve.InOutCubic)
         self.selfAnimationPos.setEndValue(
-            QPoint(DISPAYWIDTH - 5, DISPLAYHEIGHT - self.height() - 80)
+            QPoint(DISPAYWIDTH + 5, DISPLAYHEIGHT - self.height() - 80)  # 80 - 
+            #                                              высота таскбара (os: windows)
         )
 
         self.selfAnimationPos.start()
@@ -174,7 +178,8 @@ class FullNotificationWindow(QDialog):
 
     def setupUi(self):
         self.setWindowTitle(self.title)
-        self.setGeometry(300, 300, 300, 300)
+        self.setMinimumWidth(300)
+        self.move(DISPAYWIDTH - 500, DISPLAYHEIGHT - 500)
         self.setWindowIcon(QIcon("Icons/AppIcon_v3.png"))
         self.setStyleSheet(get_darkblue_notificationWindow_StyleSheet())
 
