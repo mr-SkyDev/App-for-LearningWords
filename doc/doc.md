@@ -41,3 +41,6 @@
 
 ### Окно настроек
 ![Окно настроек](/doc/gif/settingsWindow.gif)
+
+### Уведомления
+![Уведомления](/doc/gif/notificationWindow.gif)
