@@ -27,7 +27,7 @@ DISPAYWIDTH, DISPLAYHEIGHT = (user32.GetSystemMetrics(0), user32.GetSystemMetric
 
 
 class NotificationWindow(QWidget):
-    def __init__(self, title, word, value):
+    def __init__(self, word, value, title="App for LearningWords"):
         super().__init__()
 
         self.showFullButton = False
@@ -84,7 +84,6 @@ class NotificationWindow(QWidget):
             self.fullButton.setFont(QFont("Yu Gothic UI Semibold", 9))
             self.wordValueLayout.addWidget(self.fullButton)
 
-
         self.okButton = QPushButton(self)
         self.okButton.setText("Понял")
         self.okButton.setStyleSheet(get_notificationButton_StyleSheet())
@@ -119,16 +118,19 @@ class NotificationWindow(QWidget):
         self.setLayout(self.globalLayout)
 
     def setupBackEnd(self):
-        self.okButton.clicked.connect(self.closeWindowPosAnimation)
+        self.okButton.clicked.connect(self.close)
+        # self.okButton.clicked.connect(self.closeWindowPosAnimation)
 
         # ----------------------------Анимация появления окна---------------------------
         self.selfAnimationPos = QPropertyAnimation(self, b"pos")
         self.selfAnimationPos.setDuration(200)
 
         self.doPosAnimation()
-    
+
     def showFullNotificationWindow(self):
-        self.fullNotificationWindow = FullNotificationWindow(self.title, self.word, self.rawValue)
+        self.fullNotificationWindow = FullNotificationWindow(
+            self.title, self.word, self.rawValue
+        )
         self.fullNotificationWindow.exec()
 
     def doPosAnimation(self):
@@ -167,9 +169,9 @@ class FullNotificationWindow(QDialog):
         self.title = title
         self.word = word
         self.value = value
-        
+
         self.setupUi()
-    
+
     def setupUi(self):
         self.setWindowTitle(self.title)
         self.setGeometry(300, 300, 300, 300)
@@ -197,9 +199,7 @@ class FullNotificationWindow(QDialog):
         self.wordValueLayout.addWidget(self.hLine)
         self.wordValueLayout.addWidget(self.valueLbl)
         self.wordValueLayout.addItem(
-            QSpacerItem(
-                20, 70, QSizePolicy.Minimum, QSizePolicy.Expanding
-            )
+            QSpacerItem(20, 70, QSizePolicy.Minimum, QSizePolicy.Expanding)
         )
 
         self.setLayout(self.wordValueLayout)
@@ -215,8 +215,7 @@ if __name__ == "__main__":
         'n. informal эксцентричная личность, ""белая ворона"", ""сумасшедший'
         ' заяц"", ненормальный: Please don`t deal with him. He is an odd ball.-Лучше'
         " не связывайся ты с ним. Он с головой не дружит."
-        "jsdfjasldfjlksajdfj lkasjdkfl jasl;j fljsalfj llkjlvkjsa fdlsalkfj lsjadfj lskajdfkjjsdf j;klasjfd jsakljdf ;klaslkdfj ;lsajdflj;sa j;dfljaskl;jdfljsalkdfjlk;jas;ldfjsajioefjklasjdfpoiejkfljas; djfo jesifiojasdf nj oef isadof joiasefhsadjflkajsekfj;kljsadpfioeaskfl jsakldjfpioej skfl;jsapiof jasekj f;sjdpof seijf slkadjfpasesjldf jlksj fl;kjs l;kdfjl;ksjdfklj;lkajs fl;j;slj fljsdj fjs;ldfj lk;asj df;jasl;djf; asjfj peiwf jasdfpiouarshlfjkhoauisg ajsdkfh oiaruh gflhaskdfhoia jofekjasjd fhasi sjdf jlas;lfdj;ljskld fjkljskldfj kljskaldfjljasklfjlksjkdfjlksjdfjlksjdfkljlsjdflkjsld fjs fj f jkdj fkjkd fjkdjkfjk djkfjkdj kdj kfjdkj fkdj kjdk j hfkjlash jkdfh lasf"
     )
-    w = NotificationWindow(title, word, value)
+    w = NotificationWindow(word, value, title)
     w.show()
     sys.exit(app.exec_())
