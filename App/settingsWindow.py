@@ -18,11 +18,13 @@ import sys
 
 class SettingsWindow(QWidget):
     def __init__(self):
+        self.valueChanged = False
+
         super().__init__()
 
         self.setWindowTitle("Настройки")
         self.setWindowIcon(QIcon("Icons/settingsAppIcon.png"))
-        self.setGeometry(1000, 300, 300, 500)
+        self.setFixedSize(300, 400)
         self.setupUi()
         self.setupBackEnd()
 
@@ -81,6 +83,7 @@ class SettingsWindow(QWidget):
     
     def saveSettings(self):
         self.settings.setValue('notificationDelay', self.delaySB.value())
+        self.valueChanged = True
         self.close()
 
 
