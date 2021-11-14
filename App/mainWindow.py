@@ -1,20 +1,23 @@
-import sys
 import sqlite3
-from PyQt5 import QtGui
 
-from PyQt5.QtCore import QObject, QRect, QSize, Qt
+from PyQt5 import QtGui
+from PyQt5.QtGui import QCursor, QFont, QIcon
+from PyQt5.QtCore import QRect, QSize, Qt
 from PyQt5.QtWidgets import (
+    QAction,
     QApplication,
     QLabel,
     QMainWindow,
+    QMenu,
     QPushButton,
     QSizePolicy,
+    QSystemTrayIcon,
     QWidget,
     QGridLayout,
     QVBoxLayout,
     QSpacerItem,
+    qApp,
 )
-from PyQt5.QtGui import QCursor, QFont, QIcon
 
 from style import *  # Стили для виджетов
 from settingsWindow import SettingsWindow
@@ -173,6 +176,29 @@ class MainWindow(QMainWindow):
         # реализовано в методе clickOnCourseButton, который вызывается в методе кнопки 
         # курса mousePressEvent при нажатии на ЛКМ
 
+        # --------------------------------Работа с треем--------------------------------
+        self.tray_icon = QSystemTrayIcon(self)
+        self.tray_icon.setIcon(QIcon("Icons/appIcon_v3.png"))
+ 
+        """
+            Объявим и добавим действия для работы с иконкой системного трея
+            show - показать окно
+            hide - скрыть окно
+            exit - выход из программы
+        """
+        self.show_action = QAction("Show", self)
+        self.quit_action = QAction("Exit", self)
+        self.hide_action = QAction("Hide", self)
+        self.show_action.triggered.connect(self.show)
+        self.hide_action.triggered.connect(self.hide)
+        self.quit_action.triggered.connect(qApp.quit)
+        self.tray_menu = QMenu()
+        self.tray_menu.addAction(self.show_action)
+        self.tray_menu.addAction(self.hide_action)
+        self.tray_menu.addAction(self.quit_action)
+        self.tray_icon.setContextMenu(self.tray_menu)
+        self.tray_icon.show()
+
     def showSettingsWindow(self):
         self.settings = SettingsWindow()
         self.settings.move(  # Размещение окна настроек по центру главного окна
@@ -198,9 +224,23 @@ class MainWindow(QMainWindow):
 
         self.con.cursor().execute(query).fetchall()
         self.con.commit()
+    
+    def closeEvent(self, event):
+        event.ignore()  # Игнорируем отключение окна
+        self.hide()  # Скрываем окно
+
+        # Показать уведомление о сворачивании окна в трей
+        # self.tray_icon.showMessage(
+        #     "Tray Program",
+        #     "Application was minimized to Tray",
+        #     QSystemTrayIcon.Information,
+        #     2000
+        # )
 
 
 if __name__ == "__main__":
+    import sys
+
     app = QApplication(sys.argv)
     my_app = MainWindow()
     my_app.show()
