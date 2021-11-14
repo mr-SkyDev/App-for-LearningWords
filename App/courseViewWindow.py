@@ -1,5 +1,5 @@
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QUrlQuery, Qt
 from PyQt5.QtGui import QCursor, QFont, QIcon
 from PyQt5.QtWidgets import (
     QApplication,
@@ -51,7 +51,7 @@ class CourseViewWindow(QWidget):
         self.setWindowTitle(self.courseName)
         self.setWindowIcon(QIcon("Icons/appIcon_v3.png"))
         self.move(100, 100)
-        self.setMinimumWidth(820)
+        self.setMinimumWidth(840)
         self.setMinimumHeight(500)
 
         self.courseWordsTW = QTableWidget(self)  # Таблица для отображения БД
@@ -228,19 +228,6 @@ class CourseViewWindow(QWidget):
             for c in range(self.courseWordsTW.columnCount())
         ]
     
-    def __checkCells(self):
-        """ Проверка на верные значения ячеек таблицы """
-
-        self.isCourseChecked = False
-        for ir in range(self.courseWordsTW.rowCount()):
-            for ic in range(self.courseWordsTW.columnCount()):
-                item = self.courseWordsTW.item(ir, ic).text()
-                if not bool(item):
-                    return 'Есть пустые поля!'
-                if ic == 2 and item not in '+-01':
-                    return 'Неверные значения в 3й колонке (+/-)'
-                if ic == 2 and item in '+1':
-                    self.isCourseChecked = True
         
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         """ Синхронизация с главным окном и проверка на сохранение данных """
@@ -261,6 +248,35 @@ class CourseViewWindow(QWidget):
             self.courseSender.setStyleSheet(get_selected_courseButton_StyleSheet())
         else:
             self.courseSender.setStyleSheet(get_courseButton_StyleSheet())
+        self.__delExcessRows()
+
+    def __checkCells(self):
+        """ Проверка на верные значения ячеек таблицы """
+
+        self.isCourseChecked = False
+        for ir in range(self.courseWordsTW.rowCount()):
+            for ic in range(self.courseWordsTW.columnCount()):
+                item = self.courseWordsTW.item(ir, ic).text()
+                if not bool(item.strip()):
+                    return 'Есть пустые поля!'
+                if ic == 2 and item not in '+-01':
+                    return 'Неверные значения в 3й колонке (+/-)'
+                if ic == 2 and item in '+1':
+                    self.isCourseChecked = True
+    
+    def __delExcessRows(self):
+        """ Удалить полностью пустые ряды """
+
+        if self.courseName != 'myCourse':
+            return
+        
+        cur = self.con.cursor()
+        query = f"""
+            DELETE FROM {self.courseName}
+            WHERE trim(word) = '' AND trim(value) = '' AND trim(is_using) = ''
+        """
+        cur.execute(query)
+        self.con.commit()
 
 
 if __name__ == "__main__":
