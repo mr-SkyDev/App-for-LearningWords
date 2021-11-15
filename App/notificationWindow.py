@@ -38,7 +38,7 @@ class NotificationWindow(QWidget):
 
         self.lines = len(word + value) // 54 + 1
         if self.lines > 10:
-            self.lines = 8
+            self.lines = 10
             self.value = self.value[:54 * 6 - 3] + "..."
             self.showFullButton = True
 
@@ -119,12 +119,12 @@ class NotificationWindow(QWidget):
         self.setLayout(self.globalLayout)
 
     def setupBackEnd(self):
-        self.okButton.clicked.connect(self.closeWindowPosAnimation)
-        self.learnButton.clicked.connect(self.closeWindowPosAnimation)
+        self.okButton.clicked.connect(self.closeEvent)
+        self.learnButton.clicked.connect(self.closeEvent)
 
         # ----------------------------Анимация появления окна---------------------------
         self.selfAnimationPos = QPropertyAnimation(self, b"pos")
-        self.selfAnimationPos.setDuration(200)
+        self.selfAnimationPos.setDuration(300)
 
         self.doPosAnimation()
 
@@ -141,7 +141,7 @@ class NotificationWindow(QWidget):
             # QPoint(DISPAYWIDTH + 5, DISPLAYHEIGHT - self.height() - 80)
             QPoint(self.x(), self.y())
         )
-        self.selfAnimationPos.setEasingCurve(QEasingCurve.InOutCubic)
+        self.selfAnimationPos.setEasingCurve(QEasingCurve.OutBack)  #InOutCubic
 
         self.selfAnimationPos.setEndValue(
             QPoint(DISPAYWIDTH - self.width() - 5, DISPLAYHEIGHT - self.height() - 80)
@@ -149,7 +149,7 @@ class NotificationWindow(QWidget):
 
         self.selfAnimationPos.start()
 
-    def closeWindowPosAnimation(self):
+    def closeEvent(self, event):
         self.selfAnimationPos.stop()
         self.selfAnimationPos.finished.connect(self.close)
 
@@ -157,7 +157,7 @@ class NotificationWindow(QWidget):
             # QPoint(DISPAYWIDTH - self.width() - 5, DISPLAYHEIGHT - self.height() - 80)
             QPoint(self.x(), self.y())
         )
-        self.selfAnimationPos.setEasingCurve(QEasingCurve.InOutCubic)
+        self.selfAnimationPos.setEasingCurve(QEasingCurve.InBack)
         self.selfAnimationPos.setEndValue(
             QPoint(DISPAYWIDTH + 5, DISPLAYHEIGHT - self.height() - 80)  # 80 - 
             #                                              высота таскбара (os: windows)
