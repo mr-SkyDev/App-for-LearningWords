@@ -2,7 +2,7 @@ import sqlite3
 
 from PyQt5 import QtGui
 from PyQt5.QtGui import QCursor, QFont, QIcon
-from PyQt5.QtCore import QRect, QSize, Qt
+from PyQt5.QtCore import QRect, QSettings, QSize, QTimer, Qt
 from PyQt5.QtWidgets import (
     QAction,
     QApplication,
@@ -177,27 +177,27 @@ class MainWindow(QMainWindow):
         # курса mousePressEvent при нажатии на ЛКМ
 
         # --------------------------------Работа с треем--------------------------------
-        self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(QIcon("Icons/appIcon_v3.png"))
+        # self.tray_icon = QSystemTrayIcon(self)
+        # self.tray_icon.setIcon(QIcon("Icons/appIcon_v3.png"))
  
-        """
-            Объявим и добавим действия для работы с иконкой системного трея
-            show - показать окно
-            hide - скрыть окно
-            exit - выход из программы
-        """
-        self.show_action = QAction("Show", self)
-        self.quit_action = QAction("Exit", self)
-        self.hide_action = QAction("Hide", self)
-        self.show_action.triggered.connect(self.show)
-        self.hide_action.triggered.connect(self.hide)
-        self.quit_action.triggered.connect(qApp.quit)
-        self.tray_menu = QMenu()
-        self.tray_menu.addAction(self.show_action)
-        self.tray_menu.addAction(self.hide_action)
-        self.tray_menu.addAction(self.quit_action)
-        self.tray_icon.setContextMenu(self.tray_menu)
-        self.tray_icon.show()
+        # """
+        #     Объявим и добавим действия для работы с иконкой системного трея
+        #     show - показать окно
+        #     hide - скрыть окно
+        #     exit - выход из программы
+        # """
+        # self.show_action = QAction("Show", self)
+        # self.quit_action = QAction("Exit", self)
+        # self.hide_action = QAction("Hide", self)
+        # self.show_action.triggered.connect(self.show)
+        # self.hide_action.triggered.connect(self.hide)
+        # self.quit_action.triggered.connect(qApp.quit)
+        # self.tray_menu = QMenu()
+        # self.tray_menu.addAction(self.show_action)
+        # self.tray_menu.addAction(self.hide_action)
+        # self.tray_menu.addAction(self.quit_action)
+        # self.tray_icon.setContextMenu(self.tray_menu)
+        # self.tray_icon.show()
 
     def showSettingsWindow(self):
         self.settings = SettingsWindow()
@@ -225,23 +225,65 @@ class MainWindow(QMainWindow):
         self.con.cursor().execute(query).fetchall()
         self.con.commit()
     
-    def closeEvent(self, event):
-        event.ignore()  # Игнорируем отключение окна
-        self.hide()  # Скрываем окно
+    # def closeEvent(self, event):
+    #     event.ignore()  # Игнорируем отключение окна
+    #     self.hide()  # Скрываем окно
 
-        # Показать уведомление о сворачивании окна в трей
-        # self.tray_icon.showMessage(
-        #     "Tray Program",
-        #     "Application was minimized to Tray",
-        #     QSystemTrayIcon.Information,
-        #     2000
-        # )
+
+def show_notification():
+    from notificationWindow import NotificationWindow
+
+    # Получение списка таблиц-курсов
+    con = sqlite3.connect("WordsDB/words.db")
+    cur = con.cursor()
+    ignore_courses = ['sqlite_sequence']
+    courses = list(filter(lambda x: x not in ignore_courses, map(lambda x: x[0], 
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall())
+    ))
+
+    # Получение списка используемых слов и их значений
+    words_values = list()
+    for course in courses:
+        cur = con.cursor()
+        query = f"""
+            SELECT word, value FROM {course}
+            WHERE is_using = 1
+        """
+        res = cur.execute(query).fetchall()
+        words_values.append({course: res})
+
+    def get_notification_value():
+        # короче почитай про асинхронное программирование, тк у тебя иногда не успевает 
+        # загрузиться список слов
+        current_word_value = choice(words_values)
+        title = list(current_word_value.keys())[0]
+        res = choice(current_word_value[title])
+        return res[0], res[1], title
+
+    notification = NotificationWindow(*get_notification_value())
+    notification.show()
+
+
+def notification_loop():
+    settings = QSettings("App/config.ini", QSettings.IniFormat)
+    notification_delay = settings.value("notificationDelay", 1, type=int)
+
+    # QTimer.setInterval()
+    # QTimer.singleShot(notification_delay * 3_600_000, show_notification)
+    show_notification()
 
 
 if __name__ == "__main__":
     import sys
+    from random import choice
 
+    # Открытие приложения
     app = QApplication(sys.argv)
     my_app = MainWindow()
     my_app.show()
+
+    # Старт цикла уведомлений
+    notification_loop()
+
+    # Завершение работы приложения
     sys.exit(app.exec_())
