@@ -86,7 +86,8 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("App for LearningWords")
-        self.setGeometry(300, 300, 700, 700)
+        self.setGeometry(300, 300, 830, 700)
+        self.setFixedWidth(830)
         self.setWindowIcon(QIcon("Icons/appIcon_v3.png"))
 
         self.con = sqlite3.connect("WordsDB/words.db")
