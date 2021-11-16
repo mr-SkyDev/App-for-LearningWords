@@ -1,4 +1,5 @@
 import sqlite3
+import threading
 
 from PyQt5 import QtGui
 from PyQt5.QtGui import QCursor, QFont, QIcon
@@ -52,9 +53,7 @@ class CourseButton(QPushButton):
         )
 
         # Название курса
-        self.title = QLabel(
-            title, self, objectName="CourseButton-TitleLabel"
-        )
+        self.title = QLabel(title, self, objectName="CourseButton-TitleLabel")
         self.title.move(10, 10)
         self.title.setStyleSheet(get_courseButton_titleLabel_StyleSheet())
 
@@ -73,13 +72,14 @@ class CourseButton(QPushButton):
         )
         self.description.move(10, 127)
         self.description.setStyleSheet(get_courseButton_descriptionLabel_StyleSheet())
-    
+
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
         if event.button() == Qt.RightButton:
             self.courseView = CourseViewWindow(self, self.name)
             self.courseView.show()
         elif event.button() == Qt.LeftButton:
             self.parent.clickOnCourseButton(self)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -100,10 +100,12 @@ class MainWindow(QMainWindow):
         self.title.setFont(QFont("Yu Gothic UI Semibold", 18))
 
         is_using = lambda name: int(
-            1 in [
-                i[0] for i in self.con.cursor()
-                    .execute(f"SELECT is_using FROM {name}")
-                    .fetchall()
+            1
+            in [
+                i[0]
+                for i in self.con.cursor()
+                .execute(f"SELECT is_using FROM {name}")
+                .fetchall()
             ]
         )
         self.englishCourse = CourseButton(
@@ -173,13 +175,13 @@ class MainWindow(QMainWindow):
         self.settingsButton.clicked.connect(self.showSettingsWindow)
 
         # -----------------------------Выбор/удаление курса-----------------------------
-        # реализовано в методе clickOnCourseButton, который вызывается в методе кнопки 
+        # реализовано в методе clickOnCourseButton, который вызывается в методе кнопки
         # курса mousePressEvent при нажатии на ЛКМ
 
         # --------------------------------Работа с треем--------------------------------
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(QIcon("Icons/appIcon_v3.png"))
- 
+
         """
             Объявим и добавим действия для работы с иконкой системного трея
             show - показать окно
@@ -224,7 +226,7 @@ class MainWindow(QMainWindow):
 
         self.con.cursor().execute(query).fetchall()
         self.con.commit()
-    
+
     def closeEvent(self, event):
         event.ignore()  # Игнорируем отключение окна
         self.hide()  # Скрываем окно
@@ -233,10 +235,16 @@ class MainWindow(QMainWindow):
 # Получение списка таблиц-курсов
 con = sqlite3.connect("WordsDB/words.db")
 cur = con.cursor()
-ignore_courses = ['sqlite_sequence']
-courses = list(filter(lambda x: x not in ignore_courses, map(lambda x: x[0], 
-    cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall())
-))
+ignore_courses = ["sqlite_sequence"]
+courses = list(
+    filter(
+        lambda x: x not in ignore_courses,
+        map(
+            lambda x: x[0],
+            cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall(),
+        ),
+    )
+)
 
 
 def show_notification():
@@ -272,7 +280,7 @@ def notification_loop(parent):
     settings = QSettings("App/config.ini", QSettings.IniFormat)
     notification_delay = settings.value("notificationDelay", 1, type=int)
 
-    # Каждый определенный час будет присылаться уведомление 
+    # Каждый определенный час будет присылаться уведомление
     tmr = QTimer(parent)
     tmr.timeout.connect(show_notification)
     tmr.start(notification_delay * 3_600_000)  # tmr.start(notification_delay * 1000)
@@ -288,6 +296,7 @@ if __name__ == "__main__":
     my_app.show()
 
     # Старт цикла уведомлений
+    # threading.Thread(target=notification_loop, args=(my_app,)).start()
     notification_loop(my_app)
 
     # Завершение работы приложения
