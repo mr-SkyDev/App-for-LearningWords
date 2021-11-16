@@ -1,4 +1,5 @@
 from PyQt5 import QtCore
+from PyQt5 import QtGui
 from PyQt5.QtCore import QEasingCurve, QPoint, QPropertyAnimation, Qt
 from PyQt5.QtGui import QCursor, QFont, QIcon
 from PyQt5.QtWidgets import (
@@ -121,8 +122,8 @@ class NotificationWindow(QWidget):
         self.setLayout(self.globalLayout)
 
     def setupBackEnd(self):
-        self.okButton.clicked.connect(self.closeEvent)
-        self.learnButton.clicked.connect(self.closeEvent)
+        self.okButton.clicked.connect(self.closePosAnimation)
+        self.learnButton.clicked.connect(self.closePosAnimation)
 
         # ----------------------------Анимация появления окна---------------------------
         self.selfAnimationPos = QPropertyAnimation(self, b"pos")
@@ -151,7 +152,7 @@ class NotificationWindow(QWidget):
 
         self.selfAnimationPos.start()
 
-    def closeEvent(self, event):
+    def closePosAnimation(self):
         self.selfAnimationPos.stop()
         self.selfAnimationPos.finished.connect(self.close)
 
@@ -166,6 +167,10 @@ class NotificationWindow(QWidget):
         )
 
         self.selfAnimationPos.start()
+    
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        event.ignore()
+        self.hide()
 
 
 class FullNotificationWindow(QDialog):
