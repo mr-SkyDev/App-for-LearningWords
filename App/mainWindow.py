@@ -235,7 +235,7 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         event.ignore()  # Игнорируем отключение окна
         self.hide()  # Скрываем окно
-    
+
     def showRandomNotify(self):
         show_notification()
 
@@ -253,7 +253,6 @@ courses = list(
         ),
     )
 )
-
 
 opened_notification = None
 
@@ -289,14 +288,25 @@ def show_notification():
         opened_notification = notification
 
 
+first = True
+
+
 def notification_loop(parent):
+    global first
+
     settings = QSettings("App/config.ini", QSettings.IniFormat)
     notification_delay = settings.value("notificationDelay", 1, type=int)
 
     # Каждый определенный час будет присылаться уведомление
     tmr = QTimer(parent)
     tmr.timeout.connect(show_notification)
-    tmr.start(notification_delay * 3_600_000) 
+
+    # Если это первое уведомление, то посылать его через час всегда,
+    # а дальше как указано в настройках
+    if first:
+        first = False
+        notification_delay = 1
+    tmr.start(notification_delay * 3_600_000)
     # tmr.start(notification_delay * 1000)
 
 
