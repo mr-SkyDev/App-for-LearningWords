@@ -227,7 +227,7 @@ if __name__ == "__main__":
         'n. informal эксцентричная личность, ""белая ворона"", ""сумасшедший'
         ' заяц"", ненормальный: Please don`t deal with him. He is an odd ball.-Лучше'
         " не связывайся ты с ним. Он с головой не дружит.\n\n"
-        "hjjadsf jksahdfk hjasdf jkaskjdhasd fas asdfasdf asd fasdf asdf asdf asdf asdf df asdasd fasdf f asdf asdf  fkjhsas dfasdf sadf asd fasdf sadf sadf asd fasdf asdf asdf asdfasdf asdf asdf asdf asdf asdf a ajdf had fhkjashd jkfhajskdh fjkashdjk fhasjk hfjkash djfkhasjdk hfasjkh dfjkash djkasjk dhfjk ashdjkfhaksjdhfjkashdjk fhasjkd fhjkashdf jkashdjfk hsajkdfhjkashdfjkashdfjkhasjkdf a"
+        #"hjjadsf jksahdfk hjasdf jkaskjdhasd fas asdfasdf asd fasdf asdf asdf asdf asdf df asdasd fasdf f asdf asdf  fkjhsas dfasdf sadf asd fasdf sadf sadf asd fasdf asdf asdf asdfasdf asdf asdf asdf asdf asdf a ajdf had fhkjashd jkfhajskdh fjkashdjk fhasjk hfjkash djfkhasjdk hfasjkh dfjkash djkasjk dhfjk ashdjkfhaksjdhfjkashdjk fhasjkd fhjkashdf jkashdjfk hsajkdfhjkashdfjkashdfjkhasjkdf a"
     )
     w = NotificationWindow(word, value, title)
     w.show()

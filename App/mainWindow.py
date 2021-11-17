@@ -248,33 +248,40 @@ courses = list(
 )
 
 
+opened_notification = None
+
+
 def show_notification():
-    from notificationWindow import NotificationWindow
+    global opened_notification
 
-    # Получение списка используемых слов и их значений
-    words_values = list()
-    for course in courses:
-        cur = con.cursor()
-        query = f"""
-            SELECT word, value FROM {course}
-            WHERE is_using = 1
-        """
-        res = cur.execute(query).fetchall()
-        if res:
-            words_values.append({course: res})
+    if opened_notification is None or opened_notification.isHidden():
+        from notificationWindow import NotificationWindow
 
-    # Если ни один курс не выбран, то ничего не делаем
-    if not words_values:
-        return
+        # Получение списка используемых слов и их значений
+        words_values = list()
+        for course in courses:
+            cur = con.cursor()
+            query = f"""
+                SELECT word, value FROM {course}
+                WHERE is_using = 1
+            """
+            res = cur.execute(query).fetchall()
+            if res:
+                words_values.append({course: res})
 
-    def get_notification_value():
-        current_word_value = choice(words_values)
-        title = list(current_word_value.keys())[0]
-        res = choice(current_word_value[title])
-        return res[0], res[1], title
+        # Если ни один курс не выбран, то ничего не делаем
+        if not words_values:
+            return
 
-    notification = NotificationWindow(*get_notification_value())
-    notification.show()
+        def get_notification_value():
+            current_word_value = choice(words_values)
+            title = list(current_word_value.keys())[0]
+            res = choice(current_word_value[title])
+            return res[0], res[1], title
+
+        notification = NotificationWindow(*get_notification_value())
+        notification.show()
+        opened_notification = notification
 
 
 def notification_loop(parent):
@@ -284,7 +291,8 @@ def notification_loop(parent):
     # Каждый определенный час будет присылаться уведомление
     tmr = QTimer(parent)
     tmr.timeout.connect(show_notification)
-    tmr.start(notification_delay * 3_600_000)  # tmr.start(notification_delay * 1000)
+    tmr.start(notification_delay * 3_600_000) 
+    # tmr.start(notification_delay * 1000)
 
 
 if __name__ == "__main__":
