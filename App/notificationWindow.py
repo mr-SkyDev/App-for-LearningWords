@@ -1,3 +1,4 @@
+import sqlite3
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5.QtCore import QEasingCurve, QPoint, QPropertyAnimation, Qt
@@ -29,7 +30,7 @@ DISPAYWIDTH, DISPLAYHEIGHT = (user32.GetSystemMetrics(0), user32.GetSystemMetric
 
 
 class NotificationWindow(QWidget):
-    def __init__(self, word, value, title="App for LearningWords"):
+    def __init__(self, word, value, title, db_id):
         super().__init__()
 
         self.showFullButton = False
@@ -37,6 +38,7 @@ class NotificationWindow(QWidget):
         self.rawValue = value
         self.value = value
         self.title = title
+        self.id = db_id
 
         self.lines = len(word + value) // 54 + 1
         if self.lines > 8:
@@ -122,14 +124,33 @@ class NotificationWindow(QWidget):
         self.setLayout(self.globalLayout)
 
     def setupBackEnd(self):
-        self.okButton.clicked.connect(self.closePosAnimation)
-        self.learnButton.clicked.connect(self.closePosAnimation)
+        self.okButton.clicked.connect(self.ok)
+        self.learnButton.clicked.connect(self.learn)
+
+        self.con = sqlite3.connect('WordsDB/words.db')
 
         # ----------------------------Анимация появления окна---------------------------
         self.selfAnimationPos = QPropertyAnimation(self, b"pos")
         self.selfAnimationPos.setDuration(300)
 
         self.doPosAnimation()
+    
+    def ok(self):
+        ...
+        self.closePosAnimation()
+
+    def learn(self):
+        # Отмечаем в БД, что слово больше не используется
+        cur = self.con.cursor()
+        query = f"""
+            UPDATE {self.title}
+            SET is_using = 0
+            WHERE id = {self.id}
+        """
+        cur.execute(query)
+        self.con.commit()
+
+        self.closePosAnimation()
 
     def showFullNotificationWindow(self):
         self.fullNotificationWindow = FullNotificationWindow(
@@ -154,7 +175,7 @@ class NotificationWindow(QWidget):
 
     def closePosAnimation(self):
         self.selfAnimationPos.stop()
-        self.selfAnimationPos.finished.connect(self.close)
+        self.selfAnimationPos.finished.connect(self.hide)
 
         self.selfAnimationPos.setStartValue(
             # QPoint(DISPAYWIDTH - self.width() - 5, DISPLAYHEIGHT - self.height() - 80)
@@ -170,7 +191,7 @@ class NotificationWindow(QWidget):
     
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         event.ignore()
-        self.hide()
+        self.closePosAnimation()
 
 
 class FullNotificationWindow(QDialog):
@@ -229,6 +250,6 @@ if __name__ == "__main__":
         " не связывайся ты с ним. Он с головой не дружит.\n\n"
         #"hjjadsf jksahdfk hjasdf jkaskjdhasd fas asdfasdf asd fasdf asdf asdf asdf asdf df asdasd fasdf f asdf asdf  fkjhsas dfasdf sadf asd fasdf sadf sadf asd fasdf asdf asdf asdfasdf asdf asdf asdf asdf asdf a ajdf had fhkjashd jkfhajskdh fjkashdjk fhasjk hfjkash djfkhasjdk hfasjkh dfjkash djkasjk dhfjk ashdjkfhaksjdhfjkashdjk fhasjkd fhjkashdf jkashdjfk hsajkdfhjkashdfjkashdfjkhasjkdf a"
     )
-    w = NotificationWindow(word, value, title)
+    w = NotificationWindow(word, value, title, 141)
     w.show()
     sys.exit(app.exec_())

@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import (
 from style import *  # Стили для виджетов
 from settingsWindow import SettingsWindow
 from courseViewWindow import CourseViewWindow
+from notificationWindow import NotificationWindow
 
 
 class CourseButton(QPushButton):
@@ -255,14 +256,12 @@ def show_notification():
     global opened_notification
 
     if opened_notification is None or opened_notification.isHidden():
-        from notificationWindow import NotificationWindow
-
         # Получение списка используемых слов и их значений
         words_values = list()
         for course in courses:
             cur = con.cursor()
             query = f"""
-                SELECT word, value FROM {course}
+                SELECT word, value, id FROM {course}
                 WHERE is_using = 1
             """
             res = cur.execute(query).fetchall()
@@ -277,7 +276,7 @@ def show_notification():
             current_word_value = choice(words_values)
             title = list(current_word_value.keys())[0]
             res = choice(current_word_value[title])
-            return res[0], res[1], title
+            return res[0], res[1], title, res[2]
 
         notification = NotificationWindow(*get_notification_value())
         notification.show()
