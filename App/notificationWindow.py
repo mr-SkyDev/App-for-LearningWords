@@ -91,13 +91,13 @@ class NotificationWindow(QWidget):
             self.wordValueLayout.addWidget(self.fullButton)
 
         self.okButton = QPushButton(self)
-        self.okButton.setText("Понял")
+        self.okButton.setText("Понял(a)")
         self.okButton.setStyleSheet(get_notificationButton_StyleSheet())
         self.okButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.okButton.setFont(QFont("Yu Gothic UI Semibold", 9))
 
         self.learnButton = QPushButton(self)
-        self.learnButton.setText("Выучил")
+        self.learnButton.setText("Выучил(a)")
         self.learnButton.setStyleSheet(get_notificationButton_StyleSheet())
         self.learnButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.learnButton.setFont(QFont("Yu Gothic UI Semibold", 9))
