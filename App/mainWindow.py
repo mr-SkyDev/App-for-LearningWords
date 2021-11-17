@@ -193,13 +193,16 @@ class MainWindow(QMainWindow):
         self.show_action = QAction("Show", self)
         self.quit_action = QAction("Exit", self)
         self.hide_action = QAction("Hide", self)
+        self.show_notify_action = QAction("Random notify", self)
         self.show_action.triggered.connect(self.show)
         self.hide_action.triggered.connect(self.hide)
         self.quit_action.triggered.connect(qApp.quit)
+        self.show_notify_action.triggered.connect(self.showRandomNotify)
         self.tray_menu = QMenu()
         self.tray_menu.addAction(self.show_action)
         self.tray_menu.addAction(self.hide_action)
         self.tray_menu.addAction(self.quit_action)
+        self.tray_menu.addAction(self.show_notify_action)
         self.tray_icon.setContextMenu(self.tray_menu)
         self.tray_icon.show()
 
@@ -232,6 +235,9 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         event.ignore()  # Игнорируем отключение окна
         self.hide()  # Скрываем окно
+    
+    def showRandomNotify(self):
+        show_notification()
 
 
 # Получение списка таблиц-курсов
